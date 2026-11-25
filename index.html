@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#d97706" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>شاطرینو | حسابداری هوشمند نانوایی</title>
+
+  <!-- فونت فارسی وزیرمتن -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- تیلویند سی‌اس‌اس -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Vazirmatn', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      font-family: 'Vazirmatn', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      overscroll-behavior-y: contain;
+    }
+    /* مخفی کردن اسکرول‌بار افقی در منوها */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* انیمیشن نرم تب‌ها */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    /* استایل پرینت گزارش ماهانه */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-24 transition-colors duration-200 select-none sm:select-auto">
+
+  <!-- نوار بالای اپلیکیشن (Header) -->
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-stone-200 dark:border-slate-800 shadow-sm no-print">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+      <!-- لوگو و عنوان -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+          <!-- آیکون نان سنتی SVG -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 15c0-4.5 3.5-8 8-8s8 3.5 8 8v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 11v2m4-3v3m4-2v2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-extrabold tracking-tight text-stone-900 dark:text-white leading-none">شاطرینو</h1>
+          <span class="text-[11px] font-medium text-amber-600 dark:text-amber-400">حسابداری تخصصی نانوایی</span>
+        </div>
+      </div>
+
+      <!-- انتخابگر شعبه + دکمه تغییر تم -->
+      <div class="flex items-center gap-2">
+        <!-- انتخاب شعبه -->
+        <div class="relative flex items-center">
+          <select id="branchSelector" onchange="switchBranch(this.value)" class="appearance-none bg-stone-100 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 text-xs sm:text-sm font-bold rounded-xl py-2 pr-3 pl-7 text-stone-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 max-w-[135px] sm:max-w-[180px] truncate">
+          </select>
+          <svg class="w-4 h-4 text-stone-500 absolute left-2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+
+        <!-- دکمه مدیریت شعب -->
+        <button onclick="openModal('branchModal')" title="مدیریت شعب" class="p-2 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200/70 dark:border-amber-700/50 hover:bg-amber-100 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+        </button>
+
+        <!-- دکمه تغییر تم تیره و روشن -->
+        <button onclick="toggleTheme()" id="themeToggleBtn" title="تغییر تم روشن / تیره" class="p-2 rounded-xl bg-stone-100 dark:bg-slate-800 text-stone-700 dark:text-amber-400 border border-stone-200 dark:border-slate-700 hover:bg-stone-200 dark:hover:bg-slate-700 transition">
+          <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- نوار تقویم و انتخاب روز فعال -->
+    <div class="bg-amber-50/80 dark:bg-slate-800/80 border-t border-amber-200/50 dark:border-slate-700/70 px-4 py-2">
+      <div class="max-w-3xl mx-auto flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-300">
+          <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>تاریخ فعال:</span>
+          <span id="persianDateDisplay" class="bg-white dark:bg-slate-900 px-2.5 py-0.5 rounded-lg border border-amber-200 dark:border-slate-700 text-stone-800 dark:text-white shadow-2xs"></span>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="changeDateByDays(-1)" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-700 text-xs font-bold hover:bg-amber-100 dark:hover:bg-slate-700 transition">روز قبل</button>
+          <input type="date" id="activeDateInput" onchange="setActiveDate(this.value)" class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-stone-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          <button onclick="setToday()" class="px-2 py-1 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition">امروز</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوای اصلی صفحات -->
+  <main class="max-w-3xl mx-auto px-4 pt-4 space-y-5">
+
+    <!-- ==================== تب ۱: داشبورد و ثبت فروش سریع ==================== -->
+    <section id="tab-dashboard" class="tab-content space-y-5 animate-fade">
+      
+      <!-- کارت‌های آمار سریع (KPI) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-stone-200/80 dark:border-slate-800 shadow-xs">
+          <div class="flex items-center justify-between text-stone-500 dark:text-slate-400 text-xs mb-1">
+            <span>فروش نان (امروز)</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <div id="kpi-today-bread" class="text-lg sm:text-xl font-black text-stone-900 dark:text-white">۰ قرص</div>
+          <div id="kpi-today-sales-amount" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">۰ تومان</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-stone-200/80 dark:border-slate-800 shadow-xs">
+          <div class="flex items-center justify-between text-stone-500 dark:text-slate-400 text-xs mb-1">
+            <span>آرد باقیمانده انبار</span>
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          </div>
+          <div id="kpi-flour-remaining" class="text-lg sm:text-xl font-black text-amber-600 dark:text-amber-400">۰ کیسه</div>
+          <div id="kpi-flour-used-today" class="text-[11px] font-medium text-stone-500 dark:text-slate-400 mt-0.5">مصرف روز: ۰ کیسه</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-stone-200/80 dark:border-slate-800 shadow-xs">
+          <div class="flex items-center justify-between text-stone-500 dark:text-slate-400 text-xs mb-1">
+            <span>سود خالص روز انتخابی</span>
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          </div>
+          <div id="kpi-day-net" class="text-base sm:text-lg font-black text-stone-900 dark:text-white">۰ تومان</div>
+          <div id="kpi-day-expense" class="text-[11px] font-medium text-rose-500 mt-0.5">هزینه روز: ۰</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-stone-200/80 dark:border-slate-800 shadow-xs">
+          <div class="flex items-center justify-between text-stone-500 dark:text-slate-400 text-xs mb-1">
+            <span>کل طلب نسیه مشتریان</span>
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+          </div>
+          <div id="kpi-total-credit" class="text-base sm:text-lg font-black text-purple-600 dark:text-purple-400">۰ تومان</div>
+          <button onclick="switchTab('credit')" class="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-0.5 hover:underline">مشاهده دفتر نسیه ←</button>
+        </div>
+      </div>
+
+      <!-- باکس ثبت فروش هوشمند نان (تعداد یا مبلغ + محاسبه خودکار آرد) -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-stone-100 dark:border-slate-800">
+          <div>
+            <h2 class="text-base font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
+              <span class="w-2.5 h-6 rounded-full bg-amber-500 inline-block"></span>
+              ثبت فروش روزانه نان
+            </h2>
+            <p class="text-xs text-stone-500 dark:text-slate-400 mt-0.5">با وارد کردن تعداد یا مبلغ، آرد مصرفی خودکار محاسبه و کسر می‌شود</p>
+          </div>
+          <button onclick="openModal('yieldSettingsModal')" class="flex items-center gap-1.5 text-xs font-bold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-3 py-2 rounded-xl border border-amber-200 dark:border-amber-700/50 hover:bg-amber-100 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            تنظیم راندمان آرد و نرخ نان
+          </button>
+        </div>
+
+        <!-- نمایش نرخ فعلی و راندمان -->
+        <div class="grid grid-cols-2 gap-2.5 mb-4 bg-stone-50 dark:bg-slate-800/70 p-3 rounded-2xl text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-stone-500 dark:text-slate-400">نرخ هر قرص نان:</span>
+            <span id="displayBreadPrice" class="font-extrabold text-stone-800 dark:text-white">۳,۰۰۰ تومان</span>
+          </div>
+          <div class="flex items-center justify-between border-r border-stone-200 dark:border-slate-700 pr-2.5">
+            <span class="text-stone-500 dark:text-slate-400">خروجی هر کیسه آرد:</span>
+            <span id="displayBreadPerBag" class="font-extrabold text-amber-600 dark:text-amber-400">۱۵۰ قرص</span>
+          </div>
+        </div>
+
+        <!-- فرم ثبت فروش -->
+        <form onsubmit="handleAddSale(event)" class="space-y-3.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">تعداد نان فروخته شده (قرص)</label>
+              <input type="number" id="saleBreadCount" oninput="syncSaleInputs('count')" placeholder="مثلاً: 450" min="0" step="1" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">مبلغ کل فروش (تومان)</label>
+              <input type="number" id="saleTotalAmount" oninput="syncSaleInputs('amount')" placeholder="مثلاً: 1350000" min="0" step="100" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+          </div>
+
+          <!-- پیش‌نمایش محاسبه اتوماتیک آرد مصرفی -->
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 rounded-2xl px-3.5 py-2.5">
+            <div class="flex items-center gap-2 text-xs font-bold text-amber-900 dark:text-amber-200">
+              <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              <span>آرد مصرفی محاسبه شده:</span>
+            </div>
+            <div class="text-xs sm:text-sm font-black text-amber-700 dark:text-amber-300">
+              <span id="calcFlourBagsPreview">۰.۰۰</span> کیسه
+              <span class="text-[11px] font-medium opacity-80">(<span id="calcFlourKgPreview">۰</span> کیلوگرم)</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input type="text" id="saleNote" placeholder="توضیحات (مثلاً: شیفت صبح، فروش کارتخوان و نقد...)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-l from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-md shadow-amber-600/20 active:scale-[0.99] transition">
+              + ثبت فروش نان
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- لیست فروش‌های ثبت شده در روز انتخابی -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-extrabold text-stone-800 dark:text-white">ریز فروش نان در تاریخ انتخابی</h3>
+          <span id="daySalesCountBadge" class="text-xs font-bold bg-stone-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg text-stone-600 dark:text-slate-300">۰ مورد</span>
+        </div>
+        <div id="daySalesList" class="space-y-2.5">
+          <!-- آیتم‌ها با جاوااسکریپت پر می‌شوند -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== تب ۲: انبار و سهمیه آرد ==================== -->
+    <section id="tab-flour" class="tab-content hidden space-y-5 animate-fade">
+      
+      <!-- وضعیت کلی سهمیه و انبار آرد -->
+      <div class="bg-gradient-to-br from-amber-600 to-orange-700 text-white rounded-3xl p-5 shadow-lg shadow-amber-600/20">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <span class="text-xs text-amber-100 font-medium">موجودی فعلی انبار آرد</span>
+            <h2 id="flourBigRemaining" class="text-3xl font-black mt-0.5">۰ کیسه</h2>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-xs flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- نوار پیشرفت مصرف آرد -->
+        <div class="w-full bg-black/20 rounded-full h-3 overflow-hidden mb-2">
+          <div id="flourProgressBar" class="bg-white h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2 text-center text-xs">
+          <div class="bg-white/10 rounded-xl p-2">
+            <div class="text-amber-100 text-[11px]">کل سهمیه دریافتی</div>
+            <div id="flourTotalReceived" class="font-extrabold text-sm mt-0.5">۰ کیسه</div>
+          </div>
+          <div class="bg-white/10 rounded-xl p-2">
+            <div class="text-amber-100 text-[11px]">آرد مصرف شده</div>
+            <div id="flourTotalUsed" class="font-extrabold text-sm mt-0.5">۰ کیسه</div>
+          </div>
+          <div class="bg-white/10 rounded-xl p-2">
+            <div class="text-amber-100 text-[11px]">راندمان فعلی</div>
+            <div id="flourYieldSummary" class="font-extrabold text-sm mt-0.5">۱۵۰ نان/کیسه</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- فرم ثبت دریافت سهمیه آرد جدید -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <h3 class="text-base font-extrabold text-stone-900 dark:text-white mb-1">ثبت دریافت سهمیه آرد جدید</h3>
+        <p class="text-xs text-stone-500 dark:text-slate-400 mb-4">تعداد کیسه‌های آرد دولتی یا آزاد دریافتی را به انبار اضافه کنید</p>
+
+        <form onsubmit="handleAddFlourQuota(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">تعداد کیسه دریافتی</label>
+              <input type="number" id="flourBagsInput" required min="1" step="0.5" placeholder="مثلاً: 300" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">نوع سهمیه</label>
+              <select id="flourTypeInput" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <option value="سهمیه دولتی (نوع ۱)">سهمیه دولتی (نوع ۱)</option>
+                <option value="سهمیه دولتی (نوع ۲)">سهمیه دولتی (نوع ۲)</option>
+                <option value="آرد آزاد پز">آرد آزاد پز</option>
+                <option value="سایر">سایر</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">مبلغ کل خرید آرد (تومان)</label>
+              <input type="number" id="flourCostInput" min="0" placeholder="اختیاری (برای سود و زیان)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input type="text" id="flourNoteInput" placeholder="توضیحات (مثلاً: سهمیه فروردین، تحویل از کارخانه آرد...)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-sm transition">
+              + افزودن به موجودی آرد
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ابزار هوشمند: محاسبه‌گر سریع خمیر و چانه -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[11px]">ابزار شاطر</span>
+            محاسبه‌گر سریع چانه و کیسه آرد
+          </h3>
+        </div>
+        <div class="grid grid-cols-2 gap-3 items-end">
+          <div>
+            <label class="block text-xs text-stone-500 dark:text-slate-400 mb-1">تعداد کیسه آرد برای خمیرگیری:</label>
+            <input type="number" id="quickCalcBags" value="1" min="0.5" step="0.5" oninput="updateQuickDoughCalc()" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div class="bg-stone-50 dark:bg-slate-800 p-2.5 rounded-xl border border-stone-200 dark:border-slate-700 text-xs">
+            <div class="text-stone-500 dark:text-slate-400">تعداد نان قابل استخراج:</div>
+            <div id="quickCalcResult" class="text-base font-black text-amber-600 dark:text-amber-400 mt-0.5">۱۵۰ قرص نان</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- تاریخچه سهمیه‌های آرد دریافتی -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <h3 class="text-sm font-extrabold text-stone-800 dark:text-white mb-3">سوابق دریافت سهمیه آرد</h3>
+        <div id="flourHistoryList" class="space-y-2.5"></div>
+      </div>
+
+    </section>
+
+    <!-- ==================== تب ۳: هزینه‌ها و درآمدهای جانبی ==================== -->
+    <section id="tab-transactions" class="tab-content hidden space-y-5 animate-fade">
+      
+      <!-- سوییچ بین ثبت هزینه و درآمد جانبی -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="grid grid-cols-2 gap-2 p-1 bg-stone-100 dark:bg-slate-800 rounded-2xl mb-4">
+          <button type="button" id="btnModeExpense" onclick="setTxFormMode('expense')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-rose-600 text-white shadow-xs transition">
+            - ثبت هزینه (مخارج)
+          </button>
+          <button type="button" id="btnModeExtraIncome" onclick="setTxFormMode('income')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 transition">
+            + ثبت درآمد جانبی
+          </button>
+        </div>
+
+        <!-- فرم ثبت هزینه -->
+        <form id="expenseForm" onsubmit="handleAddExpense(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">دسته‌بندی هزینه</label>
+              <select id="expenseCategory" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-rose-500">
+                <option value="حقوق کارگر و شاطر">حقوق کارگر و شاطر</option>
+                <option value="بیمه تامین اجتماعی">بیمه تامین اجتماعی</option>
+                <option value="قبض برق">قبض برق</option>
+                <option value="قبض گاز">قبض گاز</option>
+                <option value="قبض آب">قبض آب</option>
+                <option value="صبحانه، ناهار و شام">صبحانه، ناهار و شام</option>
+                <option value="خمیرمایه، نمک و کنجد">خمیرمایه، نمک و کنجد</option>
+                <option value="تعمیر و نگهداری تنور و دستگاه">تعمیر و نگهداری تنور و دستگاه</option>
+                <option value="اجاره مغازه">اجاره مغازه</option>
+                <option value="سایر هزینه‌ها">سایر هزینه‌ها</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">مبلغ هزینه (تومان)</label>
+              <input type="number" id="expenseAmount" required min="100" step="100" placeholder="مثلاً: 450000" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-rose-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input type="text" id="expenseNote" placeholder="توضیحات هزینه (مثلاً: ناهار کارگران، مساعده علی...)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500" />
+            </div>
+            <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-sm transition">
+              ثبت هزینه در تاریخ فعال
+            </button>
+          </div>
+        </form>
+
+        <!-- فرم ثبت درآمد جانبی (خارج از فروش نان) -->
+        <form id="extraIncomeForm" onsubmit="handleAddExtraIncome(event)" class="space-y-3 hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">نوع درآمد جانبی</label>
+              <select id="extraIncomeCategory" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="فروش نان خشک">فروش نان خشک</option>
+                <option value="فروش گونی خالی آرد">فروش گونی خالی آرد</option>
+                <option value="فروش آرد / سبوس">فروش آرد / سبوس</option>
+                <option value="پخت سفارشی و مجالس">پخت سفارشی و مجالس</option>
+                <option value="سایر درآمدها">سایر درآمدها</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">مبلغ دریافتی (تومان)</label>
+              <input type="number" id="extraIncomeAmount" required min="100" step="100" placeholder="مثلاً: 280000" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <input type="text" id="extraIncomeNote" placeholder="توضیحات (مثلاً: فروش ۲۰ گونی خالی، فروش نان خشک...)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-sm transition">
+              ثبت درآمد جانبی
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- لیست هزینه‌ها و درآمدهای جانبی در تاریخ انتخابی -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-extrabold text-stone-800 dark:text-white">تراکنش‌های مالی روز انتخابی</h3>
+          <span class="text-[11px] text-stone-500 dark:text-slate-400">قابل ویرایش و حذف</span>
+        </div>
+        <div id="dayTransactionsList" class="space-y-2.5"></div>
+      </div>
+
+    </section>
+
+    <!-- ==================== تب ۴: گزارش سود و زیان ماهانه ==================== -->
+    <section id="tab-reports" class="tab-content hidden space-y-5 animate-fade">
+      
+      <!-- فیلتر ماه و سال گزارش -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base font-extrabold text-stone-900 dark:text-white">ترازنامه و سود و زیان ماهانه</h2>
+            <p class="text-xs text-stone-500 dark:text-slate-400">تحلیل دقیق درآمدها، هزینه‌های دسته‌بندی شده و سود خالص</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="month" id="reportMonthPicker" onchange="renderReports()" class="rounded-xl bg-stone-100 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <button onclick="window.print()" class="p-2 rounded-xl bg-stone-100 dark:bg-slate-800 text-stone-700 dark:text-slate-200 hover:bg-stone-200 transition no-print" title="چاپ گزارش">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- کارت‌های خلاصه سود و زیان ماه -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 p-3.5 rounded-2xl">
+            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300">کل درآمد ماه (نان + جانبی)</span>
+            <div id="repTotalRevenue" class="text-lg font-black text-emerald-800 dark:text-emerald-200 mt-1">۰ تومان</div>
+            <div id="repRevenueSub" class="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">نان: ۰ | جانبی: ۰</div>
+          </div>
+
+          <div class="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 p-3.5 rounded-2xl">
+            <span class="text-xs font-bold text-rose-700 dark:text-rose-300">کل هزینه‌های ماه</span>
+            <div id="repTotalExpenses" class="text-lg font-black text-rose-800 dark:text-rose-200 mt-1">۰ تومان</div>
+            <div id="repFlourUsedMonth" class="text-[11px] text-rose-600 dark:text-rose-400 mt-0.5">آرد مصرفی ماه: ۰ کیسه</div>
+          </div>
+
+          <div id="repNetCard" class="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 p-3.5 rounded-2xl">
+            <span class="text-xs font-bold text-blue-700 dark:text-blue-300">سود / زیان خالص ماه</span>
+            <div id="repNetProfit" class="text-lg font-black text-blue-800 dark:text-blue-200 mt-1">۰ تومان</div>
+            <div id="repProfitMargin" class="text-[11px] text-blue-600 dark:text-blue-400 mt-0.5">حاشیه سود: ۰٪</div>
+          </div>
+        </div>
+
+        <!-- تفکیک هزینه‌ها بر اساس دسته‌بندی با نمودار میله‌ای -->
+        <div class="mt-5">
+          <h3 class="text-sm font-extrabold text-stone-800 dark:text-white mb-3">نمودار تفکیک هزینه‌های ماهانه به تفکیک سرفصل</h3>
+          <div id="expenseBreakdownChart" class="space-y-3"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== تب ۵: دفتر نسیه مشتریان ==================== -->
+    <section id="tab-credit" class="tab-content hidden space-y-5 animate-fade">
+      
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-base font-extrabold text-stone-900 dark:text-white">دفتر نسیه و حساب مشتریان</h2>
+            <p class="text-xs text-stone-500 dark:text-slate-400">ثبت بردن نان نسیه و تسویه حساب‌های جزئی یا کامل</p>
+          </div>
+          <div class="text-left">
+            <span class="text-[11px] text-stone-500 dark:text-slate-400 block">جمع کل مطالبات</span>
+            <span id="creditPageTotal" class="text-sm font-black text-purple-600 dark:text-purple-400">۰ تومان</span>
+          </div>
+        </div>
+
+        <!-- فرم افزودن تراکنش نسیه -->
+        <form onsubmit="handleAddCreditEntry(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">نام مشتری یا ارگان</label>
+              <input type="text" id="creditCustomerName" list="customerNamesDatalist" required placeholder="مثلاً: رستوران سنتی البرز / آقای رضایی" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              <datalist id="customerNamesDatalist"></datalist>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">نوع عملیات</label>
+              <select id="creditTxType" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <option value="debt">بردن نان (افزایش بدهی نسیه +)</option>
+                <option value="payment">دریافت وجه / تسویه حساب (-)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <input type="number" id="creditAmount" required min="100" step="100" placeholder="مبلغ (تومان)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+            <div>
+              <input type="text" id="creditNote" placeholder="توضیح (مثلاً: ۲۰ عدد نان)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm py-2.5 px-4 rounded-xl shadow-sm transition">
+              ثبت در دفتر نسیه
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- لیست مشتریان نسیه‌بر و مانده حساب هر نفر -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <h3 class="text-sm font-extrabold text-stone-800 dark:text-white">لیست حساب مشتریان</h3>
+          <input type="text" id="creditSearchInput" oninput="renderCreditLedger()" placeholder="جستجوی نام مشتری..." class="rounded-xl bg-stone-100 dark:bg-slate-800 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 max-w-[160px]" />
+        </div>
+        <div id="creditCustomersList" class="space-y-3"></div>
+      </div>
+
+    </section>
+
+    <!-- ==================== تب ۶: دفتر یادداشت، دفترچه خصوصی رمزدار و تنظیمات/معرفی ==================== -->
+    <section id="tab-more" class="tab-content hidden space-y-5 animate-fade">
+      
+      <!-- سوییچ دفتر یادداشت عمومی / دفترچه خصوصی رمزدار -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="grid grid-cols-2 gap-2 p-1 bg-stone-100 dark:bg-slate-800 rounded-2xl mb-4">
+          <button id="btnPublicNotes" onclick="switchNoteTab('public')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-amber-600 text-white shadow-xs transition">
+            دفتر یادداشت عمومی
+          </button>
+          <button id="btnPrivateNotes" onclick="switchNoteTab('private')" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 flex items-center justify-center gap-1.5 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            دفترچه خصوصی رمزدار
+          </button>
+        </div>
+
+        <!-- بخش یادداشت‌های عمومی -->
+        <div id="publicNotesContainer" class="space-y-3">
+          <form onsubmit="handleAddNote(event, false)" class="space-y-2.5">
+            <input type="text" id="publicNoteTitle" required placeholder="عنوان یادداشت (مثلاً: شماره تعمیرکار تنور / لیست خرید)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <textarea id="publicNoteBody" rows="2" required placeholder="متن یادداشت را بنویسید..." class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs sm:text-sm py-2.5 rounded-xl transition">+ ذخیره یادداشت عمومی</button>
+          </form>
+          <div id="publicNotesList" class="space-y-2.5 pt-2"></div>
+        </div>
+
+        <!-- بخش دفترچه خصوصی رمزدار -->
+        <div id="privateNotesContainer" class="hidden space-y-3">
+          <!-- صفحه قفل یا تنظیم رمز اولیه -->
+          <div id="privateLockScreen" class="bg-stone-50 dark:bg-slate-800/80 border border-stone-200 dark:border-slate-700 rounded-2xl p-5 text-center space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <h4 id="pinScreenTitle" class="text-sm font-extrabold text-stone-800 dark:text-white">دفترچه خصوصی قفل است</h4>
+            <p id="pinScreenSubtitle" class="text-xs text-stone-500 dark:text-slate-400">برای مشاهده یادداشت‌های محرمانه رمز ۴ رقمی را وارد کنید</p>
+            <div class="max-w-[200px] mx-auto">
+              <input type="password" inputmode="numeric" maxlength="4" id="privatePinInput" placeholder="••••" class="w-full text-center tracking-[0.6em] text-lg font-black rounded-xl bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-600 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <button onclick="unlockOrSetPin()" id="pinActionBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold px-6 py-2.5 rounded-xl shadow-sm transition">
+              باز کردن قفل دفترچه
+            </button>
+          </div>
+
+          <!-- محتوای باز شده دفترچه خصوصی -->
+          <div id="privateUnlockedArea" class="hidden space-y-3">
+            <div class="flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/50 text-xs">
+              <span class="font-bold text-emerald-700 dark:text-emerald-300">🔓 دفترچه خصوصی باز است</span>
+              <div class="flex items-center gap-2">
+                <button onclick="promptChangePin()" class="text-amber-700 dark:text-amber-300 font-bold hover:underline">تغییر رمز</button>
+                <button onclick="lockPrivateNotes()" class="bg-stone-800 text-white px-2.5 py-1 rounded-lg font-bold">قفل کردن</button>
+              </div>
+            </div>
+
+            <form onsubmit="handleAddNote(event, true)" class="space-y-2.5">
+              <input type="text" id="privateNoteTitle" required placeholder="عنوان یادداشت محرمانه..." class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              <textarea id="privateNoteBody" rows="2" required placeholder="متن محرمانه (رمز کارت، قراردادها، حساب‌های شخصی...)" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+              <button type="submit" class="w-full bg-stone-800 dark:bg-amber-600 hover:opacity-90 text-white font-bold text-xs sm:text-sm py-2.5 rounded-xl transition">+ ذخیره در دفترچه خصوصی</button>
+            </form>
+            <div id="privateNotesList" class="space-y-2.5 pt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- بخش بکاپ‌گیری و بازیابی اطلاعات -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+        <h3 class="text-base font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          پشتیبان‌گیری (بکاپ) و انتقال اطلاعات
+        </h3>
+        <p class="text-xs text-stone-500 dark:text-slate-400">از اطلاعات حسابداری ماهانه و تمامی شعب فایل پشتیبان تهیه کنید تا در صورت تغییر گوشی، اطلاعاتتان حفظ شود.</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <button onclick="exportBackup()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-xs transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            دانلود فایل بکاپ کامل
+          </button>
+
+          <label class="flex items-center justify-center gap-2 bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 text-stone-800 dark:text-slate-100 font-extrabold text-xs sm:text-sm py-3 px-4 rounded-xl border border-stone-300 dark:border-slate-700 cursor-pointer transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            <span>بازیابی فایل بکاپ</span>
+            <input type="file" accept=".json" onchange="importBackup(event)" class="hidden" />
+          </label>
+        </div>
+
+        <div class="pt-2 border-t border-stone-100 dark:border-slate-800 flex justify-between items-center">
+          <span class="text-[11px] text-stone-400">پاکسازی داده‌های آزمایشی و شروع از صفر:</span>
+          <button onclick="openModal('resetConfirmModal')" class="text-xs font-bold text-rose-600 hover:underline">بازنشانی کل داده‌ها</button>
+        </div>
+      </div>
+
+      <!-- بخش معرفی برنامه (طبق درخواست دقیق شما) -->
+      <div class="bg-gradient-to-br from-stone-900 to-stone-800 dark:from-slate-900 dark:to-slate-800 text-white rounded-3xl p-5 sm:p-6 border border-amber-500/30 shadow-lg relative overflow-hidden">
+        <div class="absolute -left-6 -bottom-6 w-28 h-28 rounded-full bg-amber-500/10 pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-11 h-11 rounded-2xl bg-amber-500 text-stone-950 flex items-center justify-center font-black text-xl shadow-md">
+            ش
+          </div>
+          <div>
+            <h3 class="text-base font-black text-amber-400">معرفی اپلیکیشن شاطرینو</h3>
+            <span class="text-[11px] text-stone-300">نسخه ۱.۰ | ویژه همکاران محترم نانوایی</span>
+          </div>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-4 my-3">
+          <p class="text-sm sm:text-base font-extrabold leading-relaxed text-amber-100 text-center">
+            «این اپلکیشن با هزینه شخصی مجتبی رستمی فقط برای راحتی همکاران ساخته شده است.»
+          </p>
+        </div>
+
+        <div class="text-xs text-stone-300 space-y-1.5 leading-relaxed">
+          <p class="font-bold text-white">📱 راهنمای نصب روی صفحه اصلی گوشی اندروید:</p>
+          <p>در مرورگر کروم (Chrome) گوشی خود، روی دکمه سه‌نقطه (⋮) بالا ضربه بزنید و گزینه <span class="text-amber-300 font-bold">«افزودن به صفحه اصلی» (Add to Home screen)</span> را انتخاب کنید تا شاطرینو مثل یک اپلیکیشن اندرویدی مستقل نصب شود و حتی بدون اینترنت هم کار کند.</p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- نوار ناوبری پایین صفحه مخصوص موبایل (Bottom Navigation Bar) -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-stone-200 dark:border-slate-800 px-1 py-1.5 shadow-lg no-print">
+    <div class="max-w-3xl mx-auto grid grid-cols-6 gap-1">
+      <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn active flex flex-col items-center justify-center py-1.5 rounded-xl text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="text-[10px] font-extrabold mt-0.5">فروش/خانه</span>
+      </button>
+
+      <button onclick="switchTab('flour')" data-tab="flour" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-stone-500 dark:text-slate-400 hover:text-amber-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        <span class="text-[10px] font-bold mt-0.5">سهمیه آرد</span>
+      </button>
+
+      <button onclick="switchTab('transactions')" data-tab="transactions" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-stone-500 dark:text-slate-400 hover:text-amber-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-[10px] font-bold mt-0.5">هزینه/جانبی</span>
+      </button>
+
+      <button onclick="switchTab('reports')" data-tab="reports" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-stone-500 dark:text-slate-400 hover:text-amber-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span class="text-[10px] font-bold mt-0.5">سود و زیان</span>
+      </button>
+
+      <button onclick="switchTab('credit')" data-tab="credit" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-stone-500 dark:text-slate-400 hover:text-amber-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-[10px] font-bold mt-0.5">دفتر نسیه</span>
+      </button>
+
+      <button onclick="switchTab('more')" data-tab="more" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-stone-500 dark:text-slate-400 hover:text-amber-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+        <span class="text-[10px] font-bold mt-0.5">یادداشت/معرفی</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== مودال‌ها (Modals) ==================== -->
+
+  <!-- ۱. مودال تنظیم راندمان آرد و قیمت نان -->
+  <div id="yieldSettingsModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-100 dark:border-slate-800 pb-3">
+        <h3 class="text-base font-extrabold text-stone-900 dark:text-white">تنظیمات راندمان آرد و قیمت نان</h3>
+        <button onclick="closeModal('yieldSettingsModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="saveYieldSettings(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">تعداد نان استخراجی از هر کیسه آرد (قرص)</label>
+          <input type="number" id="settingBreadPerBag" required min="1" step="1" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold" />
+          <p class="text-[11px] text-stone-400 mt-1">مثلاً اگر از هر کیسه ۴۰ کیلویی ۱۵۰ عدد نان سنگک یا بربری در می‌آید، عدد ۱۵۰ را وارد کنید.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">وزن استاندارد هر کیسه آرد (کیلوگرم)</label>
+          <input type="number" id="settingBagWeight" required min="1" step="1" value="40" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 dark:text-slate-300 mb-1">قیمت فروش هر قرص نان (تومان)</label>
+          <input type="number" id="settingBreadPrice" required min="100" step="50" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2.5 text-sm font-bold" />
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm py-2.5 rounded-xl transition">ذخیره تغییرات</button>
+          <button type="button" onclick="closeModal('yieldSettingsModal')" class="px-4 bg-stone-100 dark:bg-slate-800 text-stone-700 dark:text-slate-300 font-bold text-sm py-2.5 rounded-xl">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ۲. مودال مدیریت شعب و حساب‌ها -->
+  <div id="branchModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-100 dark:border-slate-800 pb-3">
+        <h3 class="text-base font-extrabold text-stone-900 dark:text-white">مدیریت شعب و حساب‌های نانوایی</h3>
+        <button onclick="closeModal('branchModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="handleAddBranch(event)" class="flex gap-2">
+        <input type="text" id="newBranchNameInput" required placeholder="نام شعبه جدید (مثلاً: شعبه ۲ بازار)" class="flex-1 rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-bold" />
+        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-xl shrink-0">+ افزودن</button>
+      </form>
+
+      <div id="branchesListModal" class="space-y-2 max-h-60 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- ۳. مودال ویرایش آیتم (فروش / هزینه / درآمد جانبی) -->
+  <div id="editItemModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-100 dark:border-slate-800 pb-3">
+        <h3 id="editModalTitle" class="text-base font-extrabold text-stone-900 dark:text-white">ویرایش اطلاعات</h3>
+        <button onclick="closeModal('editItemModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="saveEditedItem(event)" id="editItemForm" class="space-y-3"></form>
+    </div>
+  </div>
+
+  <!-- ۴. مودال تایید پاکسازی کل داده‌ها -->
+  <div id="resetConfirmModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-2xl text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 mx-auto flex items-center justify-center text-2xl font-black">!</div>
+      <h3 class="text-base font-extrabold text-stone-900 dark:text-white">بازنشانی کامل اطلاعات برنامه</h3>
+      <p class="text-xs text-stone-500 dark:text-slate-400 leading-relaxed">آیا مطمئن هستید که می‌خواهید تمامی فروش‌ها، سهمیه آرد، هزینه‌ها و دفتر نسیه را پاک کنید و از صفر شروع کنید؟ (پیشنهاد می‌شود قبل از آن بکاپ بگیرید)</p>
+      <div class="flex gap-2">
+        <button onclick="resetAllDataToBlank()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs py-2.5 rounded-xl">بله، پاک شود</button>
+        <button onclick="closeModal('resetConfirmModal')" class="flex-1 bg-stone-100 dark:bg-slate-800 text-stone-700 dark:text-slate-200 font-bold text-xs py-2.5 rounded-xl">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- اعلان شناور (Toast Notification) -->
+  <div id="toastBox" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
+    <div id="toastMessage" class="bg-stone-900 dark:bg-amber-500 text-white dark:text-stone-950 text-xs sm:text-sm font-extrabold px-4 py-2.5 rounded-2xl shadow-xl border border-white/10">
+    </div>
+  </div>
+
+  <!-- اسکریپت اصلی منطق برنامه شاطرینو -->
+  <script>
+    // ==================== مدیریت وضعیت و داده‌های برنامه ====================
+    const STORAGE_KEY = 'shaterino_app_v1';
+
+    // تابع گرفتن تاریخ امروز به فرمت YYYY-MM-DD
+    function getTodayISO() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      return new Date(now - offset).toISOString().split('T')[0];
+    }
+
+    // ساختار پیش‌فرض یک شعبه جدید
+    function createDefaultBranchData(name) {
+      return {
+        id: 'br_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        name: name,
+        settings: {
+          breadPerBag: 150, // تعداد نان استخراجی از یک کیسه آرد
+          bagWeightKg: 40,  // وزن کیسه آرد
+          breadPrice: 3000  // قیمت هر قرص نان به تومان
+        },
+        sales: [],         // { id, date, count, amount, flourBagsUsed, note }
+        flourQuotas: [],   // { id, date, bags, type, cost, note }
+        expenses: [],      // { id, date, category, amount, note }
+        extraIncomes: [],  // { id, date, category, amount, note }
+        creditLedger: [],  // { id, date, customerName, type: 'debt'|'payment', amount, note }
+        publicNotes: []    // { id, date, title, body }
+      };
+    }
+
+    // ایجاد داده‌های نمونه اولیه برای شروع کار راحت کاربر
+    function createInitialAppState() {
+      const today = getTodayISO();
+      const mainBranch = createDefaultBranchData('شعبه ۱ (مرکزی)');
+      
+      // نمونه سهمیه ۳۰۰ کیسه آرد
+      mainBranch.flourQuotas.push({
+        id: 'fq_1',
+        date: today,
+        bags: 300,
+        type: 'سهمیه دولتی (نوع ۱)',
+        cost: 12000000,
+        note: 'سهمیه آرد ماه جاری'
+      });
+
+      // نمونه فروش امروز
+      mainBranch.sales.push({
+        id: 'sl_1',
+        date: today,
+        count: 600,
+        amount: 1800000,
+        flourBagsUsed: 4, // 600 / 150 = 4 کیسه
+        note: 'فروش شیفت صبح و عصر'
+      });
+
+      // نمونه هزینه
+      mainBranch.expenses.push({
+        id: 'ex_1',
+        date: today,
+        category: 'صبحانه، ناهار و شام',
+        amount: 250000,
+        note: 'صبحانه و ناهار پرسنل'
+      });
+
+      // نمونه درآمد جانبی
+      mainBranch.extraIncomes.push({
+        id: 'in_1',
+        date: today,
+        category: 'فروش نان خشک',
+        amount: 180000,
+        note: 'فروش نان خشک جمع‌شده هفته'
+      });
+
+      // نمونه نسیه
+      mainBranch.creditLedger.push({
+        id: 'cr_1',
+        date: today,
+        customerName: 'رستوران سنتی گلستان',
+        type: 'debt',
+        amount: 450000,
+        note: '۱۵۰ قرص نان سنگک'
+      });
+
+      // نمونه یادداشت عمومی
+      mainBranch.publicNotes.push({
+        id: 'nt_1',
+        date: today,
+        title: 'یادآوری سرویس مشعل تنور',
+        body: 'آخر هفته فیلترهای مشعل و خمیرگیر بررسی و روغن‌کاری شوند.'
+      });
+
+      return {
+        theme: 'light',
+        activeDate: today,
+        activeBranchId: mainBranch.id,
+        privatePin: null, // رمز دفترچه خصوصی (در ابتدا تنظیم نشده)
+        privateNotes: [], // یادداشت‌های خصوصی مشترک با رمز
+        branches: [mainBranch]
+      };
+    }
+
+    let appState = loadAppState();
+    let isPrivateUnlocked = false;
+    let currentEditingContext = null;
+
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.branches) && parsed.branches.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading state:', e);
+      }
+      const initial = createInitialAppState();
+      saveAppState(initial);
+      return initial;
+    }
+
+    function saveAppState(stateToSave = appState) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+      } catch (e) {
+        showToast('خطا در ذخیره‌سازی حافظه مرورگر!');
+      }
+    }
+
+    function getActiveBranch() {
+      let br = appState.branches.find(b => b.id === appState.activeBranchId);
+      if (!br) {
+        br = appState.branches[0];
+        appState.activeBranchId = br.id;
+      }
+      return br;
+    }
+
+    // ==================== ابزارهای فرمت اعداد و تاریخ شمسی ====================
+    function toPersianDigits(num) {
+      if (num === null || num === undefined) return '';
+      const persianMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+      return num.toString().replace(/\d/g, d => persianMap[d]);
+    }
+
+    function formatCurrency(amount) {
+      const rounded = Math.round(Number(amount) || 0);
+      return toPersianDigits(rounded.toLocaleString('en-US')) + ' تومان';
+    }
+
+    function formatNumber(num, decimals = 0) {
+      const val = Number(num) || 0;
+      const fixed = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+      const parts = fixed.split('.');
+      parts[0] = Number(parts[0]).toLocaleString('en-US');
+      return toPersianDigits(parts.join('/'));
+    }
+
+    // تبدیل تاریخ میلادی YYYY-MM-DD به نمایش زیبای شمسی با Intl.DateTimeFormat
+    function formatJalaliDate(isoDateStr) {
+      try {
+        if (!isoDateStr) return '';
+        const [y, m, d] = isoDateStr.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d, 12, 0, 0);
+        return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).format(dateObj);
+      } catch (e) {
+        return toPersianDigits(isoDateStr);
+      }
+    }
+
+    // ==================== نمایش پیام Toast ====================
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const text = document.getElementById('toastMessage');
+      text.textContent = msg;
+      box.classList.remove('opacity-0', '-translate-y-2');
+      box.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.remove('opacity-100', 'translate-y-0');
+        box.classList.add('opacity-0', '-translate-y-2');
+      }, 2800);
+    }
+
+    // ==================== مدیریت تم روشن و تیره ====================
+    function applyTheme() {
+      const html = document.documentElement;
+      if (appState.theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+      saveAppState();
+      showToast(appState.theme === 'dark' ? 'تم تیره فعال شد 🌙' : 'تم روشن فعال شد ☀️');
+    }
+
+    // ==================== مدیریت تقویم و تغییر روز ====================
+    function setActiveDate(newDate) {
+      if (!newDate) return;
+      appState.activeDate = newDate;
+      saveAppState();
+      updateDateUI();
+      refreshAllViews();
+    }
+
+    function setToday() {
+      setActiveDate(getTodayISO());
+      showToast('تاریخ روی امروز تنظیم شد');
+    }
+
+    function changeDateByDays(delta) {
+      const [y, m, d] = appState.activeDate.split('-').map(Number);
+      const dt = new Date(y, m - 1, d + delta, 12, 0, 0);
+      const iso = dt.toISOString().split('T')[0];
+      setActiveDate(iso);
+    }
+
+    function updateDateUI() {
+      document.getElementById('activeDateInput').value = appState.activeDate;
+      document.getElementById('persianDateDisplay').textContent = formatJalaliDate(appState.activeDate);
+    }
+
+    // ==================== ناوبری تب‌ها و مودال‌ها ====================
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+      const target = document.getElementById('tab-' + tabName);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const isTarget = btn.getAttribute('data-tab') === tabName;
+        if (isTarget) {
+          btn.classList.add('text-amber-600', 'dark:text-amber-400', 'bg-amber-50', 'dark:bg-amber-950/50');
+          btn.classList.remove('text-stone-500', 'dark:text-slate-400');
+        } else {
+          btn.classList.remove('text-amber-600', 'dark:text-amber-400', 'bg-amber-50', 'dark:bg-amber-950/50');
+          btn.classList.add('text-stone-500', 'dark:text-slate-400');
+        }
+      });
+
+      if (tabName === 'reports') renderReports();
+      if (tabName === 'credit') renderCreditLedger();
+      if (tabName === 'more') renderNotesSection();
+    }
+
+    function openModal(id) {
+      if (id === 'yieldSettingsModal') {
+        const br = getActiveBranch();
+        document.getElementById('settingBreadPerBag').value = br.settings.breadPerBag;
+        document.getElementById('settingBagWeight').value = br.settings.bagWeightKg || 40;
+        document.getElementById('settingBreadPrice').value = br.settings.breadPrice;
+      } else if (id === 'branchModal') {
+        renderBranchesModalList();
+      }
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // ==================== مدیریت شعب (چند حسابی) ====================
+    function renderBranchSelector() {
+      const select = document.getElementById('branchSelector');
+      select.innerHTML = appState.branches.map(b => 
+        `<option value="${b.id}" ${b.id === appState.activeBranchId ? 'selected' : ''}>${b.name}</option>`
+      ).join('');
+    }
+
+    function switchBranch(branchId) {
+      appState.activeBranchId = branchId;
+      saveAppState();
+      refreshAllViews();
+      const br = getActiveBranch();
+      showToast(`حساب فعال: ${br.name}`);
+    }
+
+    function handleAddBranch(e) {
+      e.preventDefault();
+      const input = document.getElementById('newBranchNameInput');
+      const name = input.value.trim();
+      if (!name) return;
+      const newBr = createDefaultBranchData(name);
+      appState.branches.push(newBr);
+      appState.activeBranchId = newBr.id;
+      saveAppState();
+      input.value = '';
+      renderBranchSelector();
+      renderBranchesModalList();
+      refreshAllViews();
+      showToast(`شعبه «${name}» ایجاد شد`);
+    }
+
+    function deleteBranch(branchId) {
+      if (appState.branches.length <= 1) {
+        showToast('حداقل یک شعبه باید در برنامه وجود داشته باشد');
+        return;
+      }
+      appState.branches = appState.branches.filter(b => b.id !== branchId);
+      if (appState.activeBranchId === branchId) {
+        appState.activeBranchId = appState.branches[0].id;
+      }
+      saveAppState();
+      renderBranchSelector();
+      renderBranchesModalList();
+      refreshAllViews();
+      showToast('شعبه حذف شد');
+    }
+
+    function renderBranchesModalList() {
+      const container = document.getElementById('branchesListModal');
+      container.innerHTML = appState.branches.map(b => `
+        <div class="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-slate-800 border ${b.id === appState.activeBranchId ? 'border-amber-500' : 'border-stone-200 dark:border-slate-700'}">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full ${b.id === appState.activeBranchId ? 'bg-amber-500' : 'bg-stone-300'}"></span>
+            <span class="text-xs sm:text-sm font-extrabold text-stone-800 dark:text-white">${b.name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            ${b.id !== appState.activeBranchId ? `<button onclick="switchBranch('${b.id}'); closeModal('branchModal')" class="text-xs font-bold text-amber-600 hover:underline">انتخاب</button>` : `<span class="text-[11px] font-bold text-emerald-600">فعال</span>`}
+            ${appState.branches.length > 1 ? `<button onclick="deleteBranch('${b.id}')" class="text-xs font-bold text-rose-500 hover:underline mr-2">حذف</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== تنظیمات راندمان آرد و ثبت فروش ====================
+    function saveYieldSettings(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const perBag = Number(document.getElementById('settingBreadPerBag').value);
+      const weight = Number(document.getElementById('settingBagWeight').value);
+      const price = Number(document.getElementById('settingBreadPrice').value);
+
+      if (perBag > 0 && price > 0) {
+        br.settings.breadPerBag = perBag;
+        br.settings.bagWeightKg = weight > 0 ? weight : 40;
+        br.settings.breadPrice = price;
+        saveAppState();
+        closeModal('yieldSettingsModal');
+        refreshAllViews();
+        showToast('تنظیمات راندمان آرد و نرخ نان ذخیره شد');
+      }
+    }
+
+    function syncSaleInputs(source) {
+      const br = getActiveBranch();
+      const countEl = document.getElementById('saleBreadCount');
+      const amountEl = document.getElementById('saleTotalAmount');
+      const price = br.settings.breadPrice;
+      const perBag = br.settings.breadPerBag;
+      const bagWeight = br.settings.bagWeightKg || 40;
+
+      let breadCount = 0;
+
+      if (source === 'count') {
+        breadCount = Number(countEl.value) || 0;
+        amountEl.value = breadCount > 0 ? Math.round(breadCount * price) : '';
+      } else {
+        const amount = Number(amountEl.value) || 0;
+        breadCount = price > 0 ? Math.round(amount / price) : 0;
+        countEl.value = breadCount > 0 ? breadCount : '';
+      }
+
+      const flourBags = perBag > 0 ? (breadCount / perBag) : 0;
+      const flourKg = flourBags * bagWeight;
+
+      document.getElementById('calcFlourBagsPreview').textContent = formatNumber(flourBags, 2);
+      document.getElementById('calcFlourKgPreview').textContent = formatNumber(flourKg, 1);
+    }
+
+    function handleAddSale(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const count = Number(document.getElementById('saleBreadCount').value) || 0;
+      const amount = Number(document.getElementById('saleTotalAmount').value) || 0;
+      const note = document.getElementById('saleNote').value.trim();
+
+      if (count <= 0 && amount <= 0) {
+        showToast('لطفاً تعداد نان یا مبلغ فروش را وارد کنید');
+        return;
+      }
+
+      const finalCount = count > 0 ? count : Math.round(amount / br.settings.breadPrice);
+      const finalAmount = amount > 0 ? amount : Math.round(finalCount * br.settings.breadPrice);
+      const flourUsed = Number((finalCount / br.settings.breadPerBag).toFixed(3));
+
+      br.sales.unshift({
+        id: 'sl_' + Date.now(),
+        date: appState.activeDate,
+        count: finalCount,
+        amount: finalAmount,
+        flourBagsUsed: flourUsed,
+        note: note || 'فروش روزانه نان'
+      });
+
+      saveAppState();
+      document.getElementById('saleBreadCount').value = '';
+      document.getElementById('saleTotalAmount').value = '';
+      document.getElementById('saleNote').value = '';
+      document.getElementById('calcFlourBagsPreview').textContent = '۰/۰۰';
+      document.getElementById('calcFlourKgPreview').textContent = '۰';
+
+      refreshAllViews();
+      showToast(`فروش ${formatNumber(finalCount)} قرص نان ثبت و ${formatNumber(flourUsed, 2)} کیسه آرد کسر شد`);
+    }
+
+    // ==================== مدیریت سهمیه و انبار آرد ====================
+    function handleAddFlourQuota(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const bags = Number(document.getElementById('flourBagsInput').value) || 0;
+      const type = document.getElementById('flourTypeInput').value;
+      const cost = Number(document.getElementById('flourCostInput').value) || 0;
+      const note = document.getElementById('flourNoteInput').value.trim();
+
+      if (bags <= 0) return;
+
+      br.flourQuotas.unshift({
+        id: 'fq_' + Date.now(),
+        date: appState.activeDate,
+        bags: bags,
+        type: type,
+        cost: cost,
+        note: note
+      });
+
+      // اگر هزینه خرید آرد وارد شده باشد، به صورت اختیاری در هزینه‌ها هم قابل لحاظ در سود و زیان است
+      saveAppState();
+      document.getElementById('flourBagsInput').value = '';
+      document.getElementById('flourCostInput').value = '';
+      document.getElementById('flourNoteInput').value = '';
+      refreshAllViews();
+      showToast(`${formatNumber(bags, 1)} کیسه آرد به انبار اضافه شد`);
+    }
+
+    function updateQuickDoughCalc() {
+      const br = getActiveBranch();
+      const bags = Number(document.getElementById('quickCalcBags').value) || 0;
+      const loaves = Math.round(bags * br.settings.breadPerBag);
+      document.getElementById('quickCalcResult').textContent = `${formatNumber(loaves)} قرص نان`;
+    }
+
+    // ==================== مدیریت هزینه‌ها و درآمدهای جانبی ====================
+    function setTxFormMode(mode) {
+      const expForm = document.getElementById('expenseForm');
+      const incForm = document.getElementById('extraIncomeForm');
+      const btnExp = document.getElementById('btnModeExpense');
+      const btnInc = document.getElementById('btnModeExtraIncome');
+
+      if (mode === 'expense') {
+        expForm.classList.remove('hidden');
+        incForm.classList.add('hidden');
+        btnExp.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-rose-600 text-white shadow-xs transition';
+        btnInc.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 transition';
+      } else {
+        incForm.classList.remove('hidden');
+        expForm.classList.add('hidden');
+        btnInc.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-emerald-600 text-white shadow-xs transition';
+        btnExp.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 transition';
+      }
+    }
+
+    function handleAddExpense(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const category = document.getElementById('expenseCategory').value;
+      const amount = Number(document.getElementById('expenseAmount').value) || 0;
+      const note = document.getElementById('expenseNote').value.trim();
+
+      if (amount <= 0) return;
+
+      br.expenses.unshift({
+        id: 'ex_' + Date.now(),
+        date: appState.activeDate,
+        category,
+        amount,
+        note
+      });
+
+      saveAppState();
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('expenseNote').value = '';
+      refreshAllViews();
+      showToast(`هزینه «${category}» ثبت شد`);
+    }
+
+    function handleAddExtraIncome(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const category = document.getElementById('extraIncomeCategory').value;
+      const amount = Number(document.getElementById('extraIncomeAmount').value) || 0;
+      const note = document.getElementById('extraIncomeNote').value.trim();
+
+      if (amount <= 0) return;
+
+      br.extraIncomes.unshift({
+        id: 'in_' + Date.now(),
+        date: appState.activeDate,
+        category,
+        amount,
+        note
+      });
+
+      saveAppState();
+      document.getElementById('extraIncomeAmount').value = '';
+      document.getElementById('extraIncomeNote').value = '';
+      refreshAllViews();
+      showToast(`درآمد «${category}» ثبت شد`);
+    }
+
+    // ==================== حذف و ویرایش آیتم‌ها ====================
+    function deleteRecord(collectionName, id) {
+      const br = getActiveBranch();
+      br[collectionName] = br[collectionName].filter(item => item.id !== id);
+      saveAppState();
+      refreshAllViews();
+      showToast('آیتم مورد نظر حذف شد');
+    }
+
+    function openEditRecord(collectionName, id) {
+      const br = getActiveBranch();
+      const item = br[collectionName].find(x => x.id === id);
+      if (!item) return;
+
+      currentEditingContext = { collectionName, id };
+      const form = document.getElementById('editItemForm');
+      const titleEl = document.getElementById('editModalTitle');
+
+      if (collectionName === 'sales') {
+        titleEl.textContent = 'ویرایش رکورد فروش نان';
+        form.innerHTML = `
+          <div>
+            <label class="block text-xs font-bold mb-1">تاریخ</label>
+            <input type="date" id="editFieldDate" value="${item.date}" required class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">تعداد نان (قرص)</label>
+            <input type="number" id="editFieldCount" value="${item.count}" required min="1" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">مبلغ کل فروش (تومان)</label>
+            <input type="number" id="editFieldAmount" value="${item.amount}" required min="1" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">توضیحات</label>
+            <input type="text" id="editFieldNote" value="${item.note || ''}" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-xs" />
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="flex-1 bg-amber-600 text-white font-extrabold text-sm py-2.5 rounded-xl">ذخیره ویرایش</button>
+            <button type="button" onclick="closeModal('editItemModal')" class="px-4 bg-stone-100 dark:bg-slate-800 font-bold text-sm py-2.5 rounded-xl">انصراف</button>
+          </div>
+        `;
+      } else {
+        titleEl.textContent = collectionName === 'expenses' ? 'ویرایش هزینه' : 'ویرایش درآمد جانبی';
+        form.innerHTML = `
+          <div>
+            <label class="block text-xs font-bold mb-1">تاریخ</label>
+            <input type="date" id="editFieldDate" value="${item.date}" required class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">عنوان / دسته‌بندی</label>
+            <input type="text" id="editFieldCategory" value="${item.category}" required class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">مبلغ (تومان)</label>
+            <input type="number" id="editFieldAmount" value="${item.amount}" required min="1" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">توضیحات</label>
+            <input type="text" id="editFieldNote" value="${item.note || ''}" class="w-full rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 px-3 py-2 text-xs" />
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="flex-1 bg-amber-600 text-white font-extrabold text-sm py-2.5 rounded-xl">ذخیره ویرایش</button>
+            <button type="button" onclick="closeModal('editItemModal')" class="px-4 bg-stone-100 dark:bg-slate-800 font-bold text-sm py-2.5 rounded-xl">انصراف</button>
+          </div>
+        `;
+      }
+
+      openModal('editItemModal');
+    }
+
+    function saveEditedItem(e) {
+      e.preventDefault();
+      if (!currentEditingContext) return;
+      const br = getActiveBranch();
+      const { collectionName, id } = currentEditingContext;
+      const item = br[collectionName].find(x => x.id === id);
+      if (!item) return;
+
+      item.date = document.getElementById('editFieldDate').value;
+      item.amount = Number(document.getElementById('editFieldAmount').value) || 0;
+      item.note = document.getElementById('editFieldNote').value.trim();
+
+      if (collectionName === 'sales') {
+        item.count = Number(document.getElementById('editFieldCount').value) || 0;
+        item.flourBagsUsed = Number((item.count / br.settings.breadPerBag).toFixed(3));
+      } else {
+        item.category = document.getElementById('editFieldCategory').value.trim();
+      }
+
+      saveAppState();
+      closeModal('editItemModal');
+      refreshAllViews();
+      showToast('تغییرات با موفقیت اعمال شد');
+    }
+
+    // ==================== دفتر نسیه مشتریان ====================
+    function handleAddCreditEntry(e) {
+      e.preventDefault();
+      const br = getActiveBranch();
+      const customerName = document.getElementById('creditCustomerName').value.trim();
+      const type = document.getElementById('creditTxType').value;
+      const amount = Number(document.getElementById('creditAmount').value) || 0;
+      const note = document.getElementById('creditNote').value.trim();
+
+      if (!customerName || amount <= 0) return;
+
+      br.creditLedger.unshift({
+        id: 'cr_' + Date.now(),
+        date: appState.activeDate,
+        customerName,
+        type,
+        amount,
+        note
+      });
+
+      saveAppState();
+      document.getElementById('creditAmount').value = '';
+      document.getElementById('creditNote').value = '';
+      refreshAllViews();
+      showToast(type === 'debt' ? `نسیه برای «${customerName}» ثبت شد` : `پرداخت «${customerName}» ثبت شد`);
+    }
+
+    function quickSettleCustomer(customerName, remainingDebt) {
+      document.getElementById('creditCustomerName').value = customerName;
+      document.getElementById('creditTxType').value = 'payment';
+      document.getElementById('creditAmount').value = remainingDebt;
+      document.getElementById('creditNote').value = 'تسویه حساب';
+      document.getElementById('creditAmount').focus();
+      showToast(`فرم تسویه برای ${customerName} آماده شد`);
+    }
+
+    function renderCreditLedger() {
+      const br = getActiveBranch();
+      const search = (document.getElementById('creditSearchInput')?.value || '').trim().toLowerCase();
+
+      // گروه‌بندی بر اساس نام مشتری
+      const customersMap = {};
+      br.creditLedger.forEach(entry => {
+        if (!customersMap[entry.customerName]) {
+          customersMap[entry.customerName] = { name: entry.customerName, debt: 0, paid: 0, records: [] };
+        }
+        if (entry.type === 'debt') {
+          customersMap[entry.customerName].debt += entry.amount;
+        } else {
+          customersMap[entry.customerName].paid += entry.amount;
+        }
+        customersMap[entry.customerName].records.push(entry);
+      });
+
+      // بروزرسانی لیست پیشنهاد نام مشتریان
+      const datalist = document.getElementById('customerNamesDatalist');
+      datalist.innerHTML = Object.keys(customersMap).map(name => `<option value="${name}">`).join('');
+
+      let totalOutstanding = 0;
+      const customersList = Object.values(customersMap).map(c => {
+        c.balance = c.debt - c.paid;
+        if (c.balance > 0) totalOutstanding += c.balance;
+        return c;
+      }).filter(c => !search || c.name.toLowerCase().includes(search));
+
+      document.getElementById('creditPageTotal').textContent = formatCurrency(totalOutstanding);
+      document.getElementById('kpi-total-credit').textContent = formatCurrency(totalOutstanding);
+
+      const container = document.getElementById('creditCustomersList');
+      if (customersList.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-xs text-stone-400">هنوز حساب نسیه‌ای ثبت نشده است</div>`;
+        return;
+      }
+
+      container.innerHTML = customersList.map(c => `
+        <div class="rounded-2xl border border-stone-200 dark:border-slate-800 p-3.5 bg-stone-50/70 dark:bg-slate-800/50 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-sm font-extrabold text-stone-900 dark:text-white">${c.name}</h4>
+              <span class="text-[11px] text-stone-500 dark:text-slate-400">کل خرید نسیه: ${formatCurrency(c.debt)} | پرداختی: ${formatCurrency(c.paid)}</span>
+            </div>
+            <div class="text-left">
+              <span class="text-[10px] block text-stone-400">مانده بدهی</span>
+              <span class="text-sm font-black ${c.balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600'}">
+                ${c.balance > 0 ? formatCurrency(c.balance) : 'تسویه شده ✓'}
+              </span>
+            </div>
+          </div>
+
+          ${c.balance > 0 ? `
+            <div class="flex justify-end">
+              <button onclick="quickSettleCustomer('${c.name.replace(/'/g, "\\'")}', ${c.balance})" class="text-[11px] font-extrabold bg-emerald-600 text-white px-3 py-1 rounded-lg hover:bg-emerald-700 transition">
+                ثبت تسویه حساب
+              </button>
+            </div>
+          ` : ''}
+
+          <div class="border-t border-stone-200/70 dark:border-slate-700/70 pt-2 space-y-1.5 max-h-32 overflow-y-auto">
+            ${c.records.map(r => `
+              <div class="flex items-center justify-between text-[11px] bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg">
+                <div>
+                  <span class="font-bold ${r.type === 'debt' ? 'text-rose-600' : 'text-emerald-600'}">${r.type === 'debt' ? '+ نسیه' : '- پرداخت'}</span>
+                  <span class="text-stone-500 mx-1">(${formatJalaliDate(r.date)})</span>
+                  ${r.note ? `<span class="text-stone-400">- ${r.note}</span>` : ''}
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold">${formatCurrency(r.amount)}</span>
+                  <button onclick="deleteRecord('creditLedger', '${r.id}')" class="text-rose-400 hover:text-rose-600 font-bold" title="حذف">&times;</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== دفتر یادداشت عمومی و دفترچه خصوصی رمزدار ====================
+    function switchNoteTab(mode) {
+      const pubContainer = document.getElementById('publicNotesContainer');
+      const privContainer = document.getElementById('privateNotesContainer');
+      const btnPub = document.getElementById('btnPublicNotes');
+      const btnPriv = document.getElementById('btnPrivateNotes');
+
+      if (mode === 'public') {
+        pubContainer.classList.remove('hidden');
+        privContainer.classList.add('hidden');
+        btnPub.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-amber-600 text-white shadow-xs transition';
+        btnPriv.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 flex items-center justify-center gap-1.5 transition';
+      } else {
+        privContainer.classList.remove('hidden');
+        pubContainer.classList.add('hidden');
+        btnPriv.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-stone-800 dark:bg-amber-600 text-white shadow-xs flex items-center justify-center gap-1.5 transition';
+        btnPub.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-stone-600 dark:text-slate-300 transition';
+        updatePrivateLockUI();
+      }
+    }
+
+    function updatePrivateLockUI() {
+      const lockScreen = document.getElementById('privateLockScreen');
+      const unlockedArea = document.getElementById('privateUnlockedArea');
+      const title = document.getElementById('pinScreenTitle');
+      const sub = document.getElementById('pinScreenSubtitle');
+      const btn = document.getElementById('pinActionBtn');
+
+      if (!appState.privatePin) {
+        lockScreen.classList.remove('hidden');
+        unlockedArea.classList.add('hidden');
+        title.textContent = 'تنظیم رمز عبور دفترچه خصوصی';
+        sub.textContent = 'برای اولین بار یک رمز ۴ رقمی انتخاب کنید تا یادداشت‌های محرمانه شما قفل شوند';
+        btn.textContent = 'ثبت رمز ۴ رقمی و ورود';
+      } else if (!isPrivateUnlocked) {
+        lockScreen.classList.remove('hidden');
+        unlockedArea.classList.add('hidden');
+        title.textContent = 'دفترچه خصوصی قفل است 🔒';
+        sub.textContent = 'رمز ۴ رقمی خود را وارد کنید';
+        btn.textContent = 'باز کردن قفل';
+      } else {
+        lockScreen.classList.add('hidden');
+        unlockedArea.classList.remove('hidden');
+        renderPrivateNotesList();
+      }
+    }
+
+    function unlockOrSetPin() {
+      const input = document.getElementById('privatePinInput');
+      const val = input.value.trim();
+      if (!/^\d{4}$/.test(val)) {
+        showToast('لطفاً یک رمز ۴ رقمی عددی وارد کنید');
+        return;
+      }
+
+      if (!appState.privatePin) {
+        appState.privatePin = val;
+        saveAppState();
+        isPrivateUnlocked = true;
+        input.value = '';
+        updatePrivateLockUI();
+        showToast('رمز دفترچه خصوصی با موفقیت تنظیم شد');
+      } else {
+        if (val === appState.privatePin) {
+          isPrivateUnlocked = true;
+          input.value = '';
+          updatePrivateLockUI();
+          showToast('دفترچه خصوصی باز شد');
+        } else {
+          input.value = '';
+          showToast('رمز عبور اشتباه است!');
+        }
+      }
+    }
+
+    function lockPrivateNotes() {
+      isPrivateUnlocked = false;
+      updatePrivateLockUI();
+      showToast('دفترچه خصوصی قفل شد 🔒');
+    }
+
+    function promptChangePin() {
+      appState.privatePin = null;
+      isPrivateUnlocked = false;
+      saveAppState();
+      updatePrivateLockUI();
+      showToast('رمز جدید ۴ رقمی را وارد کنید');
+    }
+
+    function handleAddNote(e, isPrivate) {
+      e.preventDefault();
+      if (isPrivate) {
+        const title = document.getElementById('privateNoteTitle').value.trim();
+        const body = document.getElementById('privateNoteBody').value.trim();
+        if (!title || !body) return;
+        appState.privateNotes.unshift({
+          id: 'pn_' + Date.now(),
+          date: appState.activeDate,
+          title,
+          body
+        });
+        saveAppState();
+        document.getElementById('privateNoteTitle').value = '';
+        document.getElementById('privateNoteBody').value = '';
+        renderPrivateNotesList();
+        showToast('یادداشت محرمانه ذخیره شد');
+      } else {
+        const br = getActiveBranch();
+        const title = document.getElementById('publicNoteTitle').value.trim();
+        const body = document.getElementById('publicNoteBody').value.trim();
+        if (!title || !body) return;
+        br.publicNotes.unshift({
+          id: 'nt_' + Date.now(),
+          date: appState.activeDate,
+          title,
+          body
+        });
+        saveAppState();
+        document.getElementById('publicNoteTitle').value = '';
+        document.getElementById('publicNoteBody').value = '';
+        renderNotesSection();
+        showToast('یادداشت عمومی ذخیره شد');
+      }
+    }
+
+    function deletePrivateNote(id) {
+      appState.privateNotes = appState.privateNotes.filter(n => n.id !== id);
+      saveAppState();
+      renderPrivateNotesList();
+      showToast('یادداشت محرمانه حذف شد');
+    }
+
+    function renderNotesSection() {
+      const br = getActiveBranch();
+      const pubList = document.getElementById('publicNotesList');
+      if (br.publicNotes.length === 0) {
+        pubList.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">یادداشت عمومی ثبت نشده است</div>`;
+      } else {
+        pubList.innerHTML = br.publicNotes.map(n => `
+          <div class="p-3.5 rounded-2xl bg-stone-50 dark:bg-slate-800/70 border border-stone-200 dark:border-slate-700 space-y-1">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs sm:text-sm font-extrabold text-stone-900 dark:text-white">${n.title}</h4>
+              <button onclick="deleteRecord('publicNotes', '${n.id}')" class="text-xs text-rose-500 font-bold">حذف</button>
+            </div>
+            <p class="text-xs text-stone-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">${n.body}</p>
+            <div class="text-[10px] text-stone-400 pt-1">${formatJalaliDate(n.date)}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderPrivateNotesList() {
+      const privList = document.getElementById('privateNotesList');
+      if (appState.privateNotes.length === 0) {
+        privList.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">دفترچه خصوصی خالی است</div>`;
+        return;
+      }
+      privList.innerHTML = appState.privateNotes.map(n => `
+        <div class="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-slate-800 border border-amber-200 dark:border-amber-800/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs sm:text-sm font-extrabold text-stone-900 dark:text-amber-300">🔒 ${n.title}</h4>
+            <button onclick="deletePrivateNote('${n.id}')" class="text-xs text-rose-500 font-bold">حذف</button>
+          </div>
+          <p class="text-xs text-stone-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">${n.body}</p>
+          <div class="text-[10px] text-stone-400 pt-1">${formatJalaliDate(n.date)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== گزارش تخصصی سود و زیان ماهانه ====================
+    function renderReports() {
+      const br = getActiveBranch();
+      const monthInput = document.getElementById('reportMonthPicker');
+      if (!monthInput.value) {
+        monthInput.value = appState.activeDate.slice(0, 7); // YYYY-MM
+      }
+      const selectedMonth = monthInput.value;
+
+      const monthSales = br.sales.filter(s => s.date.startsWith(selectedMonth));
+      const monthExtra = br.extraIncomes.filter(i => i.date.startsWith(selectedMonth));
+      const monthExpenses = br.expenses.filter(e => e.date.startsWith(selectedMonth));
+      const monthFlourPurchases = br.flourQuotas.filter(f => f.date.startsWith(selectedMonth));
+
+      const breadRev = monthSales.reduce((sum, s) => sum + s.amount, 0);
+      const extraRev = monthExtra.reduce((sum, i) => sum + i.amount, 0);
+      const totalRev = breadRev + extraRev;
+
+      const operationalExp = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const flourPurchaseCost = monthFlourPurchases.reduce((sum, f) => sum + (f.cost || 0), 0);
+      const totalExp = operationalExp + flourPurchaseCost;
+
+      const netProfit = totalRev - totalExp;
+      const flourBagsUsedMonth = monthSales.reduce((sum, s) => sum + s.flourBagsUsed, 0);
+      const margin = totalRev > 0 ? Math.round((netProfit / totalRev) * 100) : 0;
+
+      document.getElementById('repTotalRevenue').textContent = formatCurrency(totalRev);
+      document.getElementById('repRevenueSub').textContent = `فروش نان: ${formatCurrency(breadRev)} | جانبی: ${formatCurrency(extraRev)}`;
+      document.getElementById('repTotalExpenses').textContent = formatCurrency(totalExp);
+      document.getElementById('repFlourUsedMonth').textContent = `آرد مصرفی ماه: ${formatNumber(flourBagsUsedMonth, 1)} کیسه`;
+
+      const netEl = document.getElementById('repNetProfit');
+      netEl.textContent = (netProfit < 0 ? 'زیان: ' : '') + formatCurrency(Math.abs(netProfit));
+      document.getElementById('repProfitMargin').textContent = `نسبت سود به فروش: ${toPersianDigits(margin)}٪`;
+
+      // تفکیک هزینه‌ها بر اساس دسته‌بندی
+      const catTotals = {};
+      monthExpenses.forEach(e => {
+        catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+      });
+      if (flourPurchaseCost > 0) {
+        catTotals['خرید سهمیه آرد'] = (catTotals['خرید سهمیه آرد'] || 0) + flourPurchaseCost;
+      }
+
+      const chartContainer = document.getElementById('expenseBreakdownChart');
+      const entries = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+
+      if (entries.length === 0) {
+        chartContainer.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">در این ماه هزینه‌ای ثبت نشده است</div>`;
+      } else {
+        chartContainer.innerHTML = entries.map(([cat, val]) => {
+          const pct = totalExp > 0 ? Math.round((val / totalExp) * 100) : 0;
+          return `
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-stone-700 dark:text-slate-200">${cat}</span>
+                <span class="text-stone-900 dark:text-white">${formatCurrency(val)} <span class="text-stone-400 font-normal">(${toPersianDigits(pct)}٪)</span></span>
+              </div>
+              <div class="w-full h-2.5 bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-l from-amber-500 to-rose-500 rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // ==================== بکاپ‌گیری و بازیابی JSON ====================
+    function exportBackup() {
+      try {
+        const dataStr = JSON.stringify(appState, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Shaterino_Backup_${getTodayISO()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('فایل بکاپ با موفقیت دانلود شد ✓');
+      } catch (e) {
+        showToast('خطا در تهیه فایل بکاپ');
+      }
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.branches) && imported.branches.length > 0) {
+            appState = imported;
+            saveAppState();
+            applyTheme();
+            renderBranchSelector();
+            updateDateUI();
+            refreshAllViews();
+            showToast('اطلاعات بکاپ با موفقیت بازیابی شد ✓');
+          } else {
+            showToast('فایل بکاپ معتبر نیست!');
+          }
+        } catch (err) {
+          showToast('خطا در خواندن فایل بکاپ');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAllDataToBlank() {
+      const blankBranch = createDefaultBranchData('شعبه ۱ (اصلی)');
+      appState = {
+        theme: appState.theme,
+        activeDate: getTodayISO(),
+        activeBranchId: blankBranch.id,
+        privatePin: null,
+        privateNotes: [],
+        branches: [blankBranch]
+      };
+      isPrivateUnlocked = false;
+      saveAppState();
+      closeModal('resetConfirmModal');
+      renderBranchSelector();
+      updateDateUI();
+      refreshAllViews();
+      showToast('تمامی اطلاعات پاکسازی شد و آماده شروع جدید است');
+    }
+
+    // ==================== بروزرسانی کلی رابط کاربری ====================
+    function refreshAllViews() {
+      const br = getActiveBranch();
+      const activeDate = appState.activeDate;
+
+      // نمایش نرخ و راندمان در فرم فروش
+      document.getElementById('displayBreadPrice').textContent = formatCurrency(br.settings.breadPrice);
+      document.getElementById('displayBreadPerBag').textContent = `${formatNumber(br.settings.breadPerBag)} قرص`;
+      updateQuickDoughCalc();
+
+      // محاسبات روز انتخابی
+      const daySales = br.sales.filter(s => s.date === activeDate);
+      const dayExpenses = br.expenses.filter(e => e.date === activeDate);
+      const dayExtraIncomes = br.extraIncomes.filter(i => i.date === activeDate);
+
+      const dayBreadCount = daySales.reduce((sum, s) => sum + s.count, 0);
+      const dayBreadSalesAmount = daySales.reduce((sum, s) => sum + s.amount, 0);
+      const dayFlourUsed = daySales.reduce((sum, s) => sum + s.flourBagsUsed, 0);
+      const dayExtraAmount = dayExtraIncomes.reduce((sum, i) => sum + i.amount, 0);
+      const dayExpenseAmount = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const dayNet = (dayBreadSalesAmount + dayExtraAmount) - dayExpenseAmount;
+
+      // محاسبات کل انبار آرد شعبه
+      const totalReceivedBags = br.flourQuotas.reduce((sum, q) => sum + q.bags, 0);
+      const totalUsedBags = br.sales.reduce((sum, s) => sum + s.flourBagsUsed, 0);
+      const remainingBags = totalReceivedBags - totalUsedBags;
+
+      // بروزرسانی کارت‌های KPI داشبورد
+      document.getElementById('kpi-today-bread').textContent = `${formatNumber(dayBreadCount)} قرص`;
+      document.getElementById('kpi-today-sales-amount').textContent = formatCurrency(dayBreadSalesAmount);
+      document.getElementById('kpi-flour-remaining').textContent = `${formatNumber(remainingBags, 1)} کیسه`;
+      document.getElementById('kpi-flour-used-today').textContent = `مصرف روز: ${formatNumber(dayFlourUsed, 2)} کیسه`;
+      document.getElementById('kpi-day-net').textContent = formatCurrency(dayNet);
+      document.getElementById('kpi-day-expense').textContent = `هزینه روز: ${formatCurrency(dayExpenseAmount)}`;
+
+      // بروزرسانی تب سهمیه و انبار آرد
+      document.getElementById('flourBigRemaining').textContent = `${formatNumber(remainingBags, 1)} کیسه`;
+      document.getElementById('flourTotalReceived').textContent = `${formatNumber(totalReceivedBags, 1)} کیسه`;
+      document.getElementById('flourTotalUsed').textContent = `${formatNumber(totalUsedBags, 2)} کیسه`;
+      document.getElementById('flourYieldSummary').textContent = `${formatNumber(br.settings.breadPerBag)} نان/کیسه`;
+      const remainPct = totalReceivedBags > 0 ? Math.max(0, Math.min(100, (remainingBags / totalReceivedBags) * 100)) : 0;
+      document.getElementById('flourProgressBar').style.width = `${remainPct}%`;
+
+      // لیست تاریخچه سهمیه‌های آرد
+      const flourHistoryEl = document.getElementById('flourHistoryList');
+      if (br.flourQuotas.length === 0) {
+        flourHistoryEl.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">هنوز سهمیه آردی ثبت نشده است</div>`;
+      } else {
+        flourHistoryEl.innerHTML = br.flourQuotas.map(q => `
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-slate-800/70 border border-stone-200/80 dark:border-slate-700/70">
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-stone-800 dark:text-white">+ ${formatNumber(q.bags, 1)} کیسه (${q.type})</div>
+              <div class="text-[11px] text-stone-500 dark:text-slate-400">${formatJalaliDate(q.date)} ${q.note ? `• ${q.note}` : ''}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              ${q.cost > 0 ? `<span class="text-xs font-bold text-stone-600 dark:text-slate-300">${formatCurrency(q.cost)}</span>` : ''}
+              <button onclick="deleteRecord('flourQuotas', '${q.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg text-xs font-bold">حذف</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // لیست فروش‌های روز انتخابی
+      document.getElementById('daySalesCountBadge').textContent = `${toPersianDigits(daySales.length)} مورد`;
+      const salesListEl = document.getElementById('daySalesList');
+      if (daySales.length === 0) {
+        salesListEl.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">در این تاریخ هنوز فروشی ثبت نشده است</div>`;
+      } else {
+        salesListEl.innerHTML = daySales.map(s => `
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-slate-800/70 border border-stone-200/80 dark:border-slate-700/70">
+            <div class="space-y-0.5">
+              <div class="text-xs sm:text-sm font-extrabold text-stone-900 dark:text-white">
+                ${formatNumber(s.count)} قرص نان
+                <span class="text-emerald-600 dark:text-emerald-400 mr-1">(${formatCurrency(s.amount)})</span>
+              </div>
+              <div class="text-[11px] text-amber-700 dark:text-amber-300 font-semibold">
+                آرد مصرفی: ${formatNumber(s.flourBagsUsed, 2)} کیسه
+                ${s.note ? `<span class="text-stone-400 font-normal">• ${s.note}</span>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="openEditRecord('sales', '${s.id}')" class="px-2 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg">ویرایش</button>
+              <button onclick="deleteRecord('sales', '${s.id}')" class="px-2 py-1 text-[11px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 rounded-lg">حذف</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // لیست هزینه‌ها و درآمدهای جانبی روز انتخابی
+      const txListEl = document.getElementById('dayTransactionsList');
+      const combinedTx = [
+        ...dayExpenses.map(e => ({ ...e, txKind: 'expense' })),
+        ...dayExtraIncomes.map(i => ({ ...i, txKind: 'income' }))
+      ];
+
+      if (combinedTx.length === 0) {
+        txListEl.innerHTML = `<div class="text-center py-6 text-xs text-stone-400">در این تاریخ هزینه یا درآمد جانبی ثبت نشده است</div>`;
+      } else {
+        txListEl.innerHTML = combinedTx.map(t => {
+          const isExp = t.txKind === 'expense';
+          const colName = isExp ? 'expenses' : 'extraIncomes';
+          return `
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-slate-800/70 border border-stone-200/80 dark:border-slate-700/70">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${isExp ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                    ${isExp ? 'هزینه' : 'درآمد جانبی'}
+                  </span>
+                  <span class="text-xs sm:text-sm font-extrabold text-stone-800 dark:text-white">${t.category}</span>
+                </div>
+                <div class="text-xs font-black mt-1 ${isExp ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">
+                  ${isExp ? '-' : '+'} ${formatCurrency(t.amount)}
+                  ${t.note ? `<span class="text-[11px] font-normal text-stone-400 mr-1">(${t.note})</span>` : ''}
+                </div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="openEditRecord('${colName}', '${t.id}')" class="px-2 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg">ویرایش</button>
+                <button onclick="deleteRecord('${colName}', '${t.id}')" class="px-2 py-1 text-[11px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 rounded-lg">حذف</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      renderCreditLedger();
+      renderNotesSection();
+      renderReports();
+    }
+
+    // ==================== راه‌اندازی اولیه اپلیکیشن ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      renderBranchSelector();
+      updateDateUI();
+      document.getElementById('reportMonthPicker').value = appState.activeDate.slice(0, 7);
+      refreshAllViews();
+    });
+  </script>
+</body>
+</html>
